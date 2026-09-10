@@ -3,215 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iPhone専用 英語学習読み上げアプリ</title>
+    <title>流暢な英日リピート交互読み上げ</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; background-color: #f5f5f7; color: #1d1d1f; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1 { font-size: 20px; text-align: center; margin-bottom: 20px; }
-        textarea { width: 100%; height: 120px; border-radius: 8px; border: 1px solid #d2d2d7; padding: 10px; box-sizing: border-box; font-size: 14px; margin-bottom: 15px; }
-        .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .row { display: flex; justify-content: space-between; align-items: center; }
-        select { padding: 8px; border-radius: 6px; border: 1px solid #d2d2d7; font-size: 14px; }
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
-        button { padding: 12px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .btn-start { background-color: #0071e3; color: white; flex: 2; }
-        .btn-pause { background-color: #ff9500; color: white; flex: 1; }
-        .btn-stop { background-color: #ff3b30; color: white; flex: 1; }
-        .btn-nav { background-color: #e5e5ea; color: #1d1d1f; flex: 1; }
-        .status-box { background: #f2f2f7; padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 14px; line-height: 1.6; }
-        .current-text { font-weight: bold; color: #0071e3; margin-top: 5px; min-height: 1.6em; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f0f4f8; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 650px; width: 100%; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); box-sizing: border-box; }
+        h1 { font-size: 1.4rem; text-align: center; color: #1e293b; margin-bottom: 20px; }
+        label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; font-size: 0.9rem; color: #475569; }
+        textarea { width: 100%; height: 140px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; font-size: 0.95rem; box-sizing: border-box; resize: vertical; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .display { margin-top: 25px; padding: 20px; background-color: #f1f5f9; border-radius: 8px; text-align: center; border-left: 6px solid #3b82f6; }
+        .current-info { font-size: 1.2rem; font-weight: bold; color: #64748b; margin-bottom: 10px; }
+        .current-text { font-size: 1.8rem; font-weight: bold; color: #0f172a; min-height: 2.2rem; word-break: break-all; line-height: 1.3; }
+        .control { display: flex; gap: 10px; margin-top: 25px; }
+        button { flex: 1; padding: 14px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; color: white; transition: all 0.2s; }
+        .btn-start { background-color: #10b981; }
+        .btn-pause { background-color: #f59e0b; }
+        .btn-stop { background-color: #ef4444; }
+        .nav { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-nav { background-color: #475569; padding: 12px; font-size: 0.9rem; }
+        button:disabled { background-color: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+        .file-box { margin-top: 8px; padding: 12px; background: #f8fafc; border-radius: 8px; }
+        .file-box input { padding: 8px; background: white; }
+        #fileStatus { font-size: 0.85rem; color: #475569; margin-top: 7px; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>📱 英語・日本語 3回交互読み上げ</h1>
-    
-    <textarea id="dataInput" placeholder="ここにExcelのA列（日本語）B列（英語）をコピーして貼り付けてください。&#10;（例：こんにちは[タブ]Hello）"></textarea>
-    
-    <div class="controls">
-        <div class="row">
-            <label>読み上げの間隔：</label>
-            <select id="intervalSelect">
-                <option value="1000">1秒</option>
-                <option value="2000" selected>2秒</option>
-                <option value="3000">3秒</option>
-            </select>
-        </div>
-        
-        <div class="btn-group">
-            <button class="btn-start" onclick="startReading()">スタート</button>
-            <button class="btn-pause" onclick="pauseReading()">一時中断</button>
-            <button class="btn-stop" onclick="stopReading()">終了</button>
-        </div>
-        
-        <div class="btn-group">
-            <button class="btn-nav" onclick="prevLine()">⏮ 1行戻る</button>
-            <button class="btn-nav" onclick="nextLine()">⏭ 1行飛ばす</button>
-        </div>
+    <h1>流暢な英日リピート交互読み上げ</h1>
+
+    <label for="dataInput">Excelデータ貼り付け欄（A列＝日本語、B列＝英語）</label>
+    <textarea id="dataInput" placeholder="ExcelのA列とB列をまとめてコピーして貼り付けてください"></textarea>
+
+    <label>Excelファイルを直接読み込む（A列＝日本語、B列＝英語）</label>
+    <div class="file-box">
+        <input type="file" id="excelFile" accept=".xlsx,.xls">
+        <div id="fileStatus">Excelファイルを選んでください。</div>
     </div>
-    
-    <div class="status-box">
-        <div>現在の進行状況：<span id="lineNumber">0</span> 行目 / <span id="totalLines">0</span> 行</div>
-        <div class="current-text" id="nowPlaying">停止中（Excelデータを貼ってスタートを押してください）</div>
+
+    <div class="grid-3">
+        <div><label>順序</label><select id="mode"><option value="ja-en">① 日本語 → 英語</option><option value="en-ja">② 英語 → 日本語</option></select></div>
+        <div><label>間隔</label><select id="wait"><option value="1">1秒</option><option value="2" selected>2秒</option><option value="3">3秒</option></select></div>
+        <div><label>リピート回数</label><select id="repeatCount"><option value="1">1回</option><option value="2">2回</option><option value="3" selected>3回</option></select></div>
+    </div>
+    <div class="grid">
+        <div><label>現在/開始行</label><input type="number" id="sRow" value="1" min="1" onchange="idxSync()"></div>
+        <div><label>終了行</label><input type="number" id="eRow" placeholder="最後迄" min="1"></div>
+    </div>
+
+    <div class="display">
+        <div id="rNum" class="current-info">停止中</div>
+        <div id="tDisp" class="current-text">-</div>
+    </div>
+
+    <div class="control">
+        <button id="b-st" class="btn-start" onclick="play()">スタート</button>
+        <button id="b-ps" class="btn-pause" onclick="pause()" disabled>一時中断</button>
+        <button id="b-sp" class="btn-stop" onclick="stop()" disabled>終了</button>
+    </div>
+    <div class="nav">
+        <button class="btn-nav" onclick="goRow(-1)">▲ 1行戻る</button>
+        <button class="btn-nav" onclick="goHead()">⏮ 最初に戻る</button>
+        <button class="btn-nav" onclick="goRow(1)">▼ 1行進む</button>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-    let lines = [];
-    let currentIndex = 0;
-    let isPlaying = false;
-    let isPaused = false;
-    let currentTimeout = null;
+    let data = [], idx = 0, playing = false, paused = false, loop = 1, step = 0, tid = null, vJa = null, vEn = null;
 
-    // iPhone音声の事前読み込み（これがないとiPhoneで声が切り替わりません）
-    window.speechSynthesis.getVoices();
+    function initV() {
+        if (!('speechSynthesis' in window)) return;
+        const vs = window.speechSynthesis.getVoices();
+        vJa = vs.find(v => v.lang === 'ja-JP' && (v.name.includes('Google') || v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Siri')))
+          || vs.find(v => v.lang.startsWith('ja'));
+        vEn = vs.find(v => v.lang === 'en-US' && (v.name.includes('Google') || v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Siri') || v.name.includes('Zira')))
+          || vs.find(v => v.lang.startsWith('en'));
+    }
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = initV;
+        initV();
+    }
 
-    function parseData() {
-        const text = document.getElementById('dataInput').value;
-        lines = text.split('\n').map(line => {
-            const parts = line.split('\t');
-            return {
-                ja: parts[0] ? parts[0].trim() : '',
-                en: parts[1] ? parts[1].trim() : ''
-            };
+    function parse() {
+        const text = document.getElementById('dataInput').value.trim();
+        if (!text) return [];
+        return text.split(/\r?\n/).map(line => {
+            const parts = line.split(/\t/);
+            return { ja: (parts[0] || '').trim(), en: (parts[1] || '').trim() };
         }).filter(item => item.ja || item.en);
-        document.getElementById('totalLines').innerText = lines.length;
     }
 
-    function startReading() {
-        if (isPlaying && !isPaused) return;
-        
-        if (!isPaused) {
-            parseData();
-            if (lines.length === 0) {
-                alert('データが入力されていません。');
-                return;
-            }
-            currentIndex = 0;
+    function setData(newData) {
+        data = newData.filter(x => x.ja || x.en);
+        idx = 0; loop = 1; step = 0; paused = false;
+        document.getElementById('sRow').value = 1;
+        document.getElementById('eRow').value = '';
+        document.getElementById('fileStatus').innerText = '読み込み完了：' + data.length + '行';
+        document.getElementById('rNum').innerText = '読み込み完了';
+        document.getElementById('tDisp').innerText = data.length ? data[0].ja : '-';
+        btn();
+    }
+
+    document.getElementById('excelFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!window.XLSX) {
+            document.getElementById('fileStatus').innerText = 'Excel読み込み機能を読み込めませんでした。';
+            return;
         }
-        
-        isPlaying = true;
-        isPaused = false;
-        speakLoop();
-    }
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            try {
+                const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+                const newData = rows.map(row => ({
+                    ja: String(row[0] ?? '').trim(),
+                    en: String(row[1] ?? '').trim()
+                })).filter(x => x.ja || x.en);
 
-    function pauseReading() {
-        if (!isPlaying) return;
-        isPaused = true;
-        isPlaying = false;
-        window.speechSynthesis.cancel();
-        if (currentTimeout) clearTimeout(currentTimeout);
-        document.getElementById('nowPlaying').innerText = '一時中断中...（スタートで再開）';
-    }
-
-    function stopReading() {
-        isPlaying = false;
-        isPaused = false;
-        window.speechSynthesis.cancel();
-        if (currentTimeout) clearTimeout(currentTimeout);
-        currentIndex = 0;
-        document.getElementById('lineNumber').innerText = '0';
-        document.getElementById('nowPlaying').innerText = '終了しました';
-    }
-
-    function nextLine() {
-        if (currentIndex < lines.length - 1) {
-            currentIndex++;
-            updateStatus();
-            if (isPlaying) {
-                window.speechSynthesis.cancel();
-                if (currentTimeout) clearTimeout(currentTimeout);
-                speakLoop();
+                setData(newData);
+            } catch (err) {
+                document.getElementById('fileStatus').innerText = 'Excelを読み込めませんでした。';
             }
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
+    function idxSync() {
+        idx = Math.max(0, (parseInt(document.getElementById('sRow').value,10) || 1) - 1);
+    }
+
+    function play() {
+        if (paused) {
+            paused = false; playing = true; btn(); txt(); return;
         }
-    }
-
-    function prevLine() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateStatus();
-            if (isPlaying) {
-                window.speechSynthesis.cancel();
-                if (currentTimeout) clearTimeout(currentTimeout);
-                speakLoop();
-            }
+        if (!data.length) data = parse();
+        if (data.length === 0) {
+            alert('Excelファイルを選ぶか、Excelからデータをコピーして貼り付けてください。');
+            return;
         }
+        idxSync(); playing = true; paused = false; loop = 1; step = 0;
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(''));
+        btn(); txt();
     }
 
-    function updateStatus() {
-        document.getElementById('lineNumber').innerText = currentIndex + 1;
-    }
-
-    async function speakLoop() {
-        if (!isPlaying || currentIndex >= lines.length) {
-            if (currentIndex >= lines.length) stopReading();
+    function txt() {
+        if (!playing || paused) return;
+        const eR = parseInt(document.getElementById('eRow').value,10);
+        if ((eR && idx >= eR) || idx >= data.length) {
+            stop();
+            document.getElementById('rNum').innerText = "すべての指定行が完了しました";
+            document.getElementById('tDisp').innerText = "-";
             return;
         }
 
-        updateStatus();
-        const currentData = lines[currentIndex];
-        const interval = parseInt(document.getElementById('intervalSelect').value);
+        document.getElementById('sRow').value = idx + 1;
+        const item = data[idx], md = document.getElementById('mode').value, s = parseInt(document.getElementById('wait').value,10);
+        const maxLoop = parseInt(document.getElementById('repeatCount').value, 10);
 
-        // 1. 日本語を3回連続で読み上げ
-        if (currentData.ja) {
-            document.getElementById('nowPlaying').innerText = `[日本語] ${currentData.ja}`;
-            for (let i = 0; i < 3; i++) {
-                if (!isPlaying) return;
-                await speakAndWait(currentData.ja, 'ja-JP', 1.0, 1.0); // 日本語は音量マックス(1.0)、速度標準(1.0)
-            }
+        document.getElementById('rNum').innerText = `${idx+1} 行目を読み上げ中 (リピート ${loop} / ${maxLoop} 回目)`;
+
+        let t = "", l = "", v = null, vol = 1.0;
+        if (md === 'ja-en') {
+            t = (step === 0) ? item.ja : item.en;
+            l = (step === 0) ? 'ja-JP' : 'en-US';
+            v = (step === 0) ? vJa : vEn;
+            vol = (step === 0) ? 1.0 : 0.85; // 日本語を最大(1.0)、英語を少し控えめ(0.85)に調整
+        } else {
+            t = (step === 0) ? item.en : item.ja;
+            l = (step === 0) ? 'en-US' : 'ja-JP';
+            v = (step === 0) ? vEn : vJa;
+            vol = (step === 0) ? 0.85 : 1.0; // 英語を少し控えめ(0.85)、日本語を最大(1.0)に調整
         }
 
-        // 指定された間隔（1秒〜3秒）待機
-        if (!isPlaying) return;
-        await new Promise(resolve => currentTimeout = setTimeout(resolve, interval));
+        document.getElementById('tDisp').innerText = t || "-";
+        if (!t) { nextStep(); txt(); return; }
 
-        // 2. 英語を3回連続で読み上げ
-        if (currentData.en) {
-            document.getElementById('nowPlaying').innerText = `[英語] ${currentData.en}`;
-            for (let i = 0; i < 3; i++) {
-                if (!isPlaying) return;
-                await speakAndWait(currentData.en, 'en-US', 0.65, 1.0); // 英語は音量を小さめ(0.65)にしてバランス調整、速度標準(1.0)
-            }
-        }
+        const u = new SpeechSynthesisUtterance(t);
+        u.lang = l;
+        if (v) u.voice = v;
+        u.volume = vol;
+        u.rate = (l === 'ja-JP') ? 0.95 : 0.9;
 
-        // 指定された間隔（1秒〜3秒）待機して次の行へ
-        if (!isPlaying) return;
-        await new Promise(resolve => currentTimeout = setTimeout(resolve, interval));
-
-        currentIndex++;
-        speakLoop();
+        u.onend = function() {
+            if (!playing || paused) return;
+            tid = setTimeout(() => { nextStep(); txt(); }, s * 1000);
+        };
+        u.onerror = function() { nextStep(); txt(); };
+        window.speechSynthesis.speak(u);
     }
 
-    function speakAndWait(text, lang, volume, rate) {
-        return new Promise((resolve) => {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            utterance.volume = volume;
-            utterance.rate = rate;
+    function nextStep() {
+        const maxLoop = parseInt(document.getElementById('repeatCount').value, 10);
+        if (step === 0) step = 1;
+        else {
+            step = 0;
+            if (loop < maxLoop) loop++;
+            else { loop = 1; idx++; }
+        }
+    }
 
-            // iPhoneで確実に女性スピーカーを選ぶための処理
-            const voices = window.speechSynthesis.getVoices();
-            if (lang === 'ja-JP') {
-                // 日本語の流暢な女性（SiriまたはKyoko）
-                const jaVoice = voices.find(v => v.lang === 'ja-JP' && (v.name.includes('Siri') || v.name.includes('Kyoko') || v.name.includes('Otoya')));
-                if (jaVoice) utterance.voice = jaVoice;
-            } else if (lang === 'en-US') {
-                // 英語の聞き取りやすいネイティブ女性（SamanthaまたはSiri）
-                const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Siri') || v.name.includes('Ava')));
-                if (enVoice) utterance.voice = enVoice;
-            }
+    function pause() {
+        if (playing) {
+            playing = false; paused = true;
+            window.speechSynthesis.cancel();
+            if (tid) clearTimeout(tid);
+            document.getElementById('rNum').innerText = `一時中断中 (次から再開: ${idx+1}行目)`;
+            btn();
+        }
+    }
 
-            utterance.onend = () => {
-                // iPhoneの次の読み上げへの「余白（0.2秒）」を持たせてフリーズを防ぐ
-                setTimeout(resolve, 200);
-            };
-            utterance.onerror = () => resolve();
+    function stop() {
+        playing = false; paused = false;
+        window.speechSynthesis.cancel();
+        if (tid) clearTimeout(tid);
+        loop = 1; step = 0;
+        document.getElementById('rNum').innerText = "停止中";
+        document.getElementById('tDisp').innerText = "-";
+        btn();
+    }
 
-            window.speechSynthesis.speak(utterance);
-        });
+    function goHead() {
+        const p = playing || paused;
+        stop();
+        document.getElementById('sRow').value = 1;
+        idx = 0;
+        if (p) play();
+    }
+
+    function goRow(o) {
+        const p = playing || paused;
+        stop();
+        let v = (parseInt(document.getElementById('sRow').value,10) || 1) + o;
+        if (v < 1) v = 1;
+        if (data.length && v > data.length) v = data.length;
+        document.getElementById('sRow').value = v;
+        idx = v - 1;
+        if (p) play();
+    }
+
+    function btn() {
+        document.getElementById('b-st').disabled = playing;
+        document.getElementById('b-ps').disabled = !playing;
+        document.getElementById('b-sp').disabled = !playing && !paused;
     }
 </script>
-
 </body>
 </html>
