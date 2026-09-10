@@ -171,12 +171,12 @@
             t = (step === 0) ? item.ja : item.en;
             l = (step === 0) ? 'ja-JP' : 'en-US';
             v = (step === 0) ? vJa : vEn;
-            vol = (step === 0) ? 1.0 : 0.85; // 日本語を最大(1.0)、英語を少し控えめ(0.85)に調整
+            vol = (step === 0) ? 0.6 : 1.0;
         } else {
             t = (step === 0) ? item.en : item.ja;
             l = (step === 0) ? 'en-US' : 'ja-JP';
             v = (step === 0) ? vEn : vJa;
-            vol = (step === 0) ? 0.85 : 1.0; // 英語を少し控えめ(0.85)、日本語を最大(1.0)に調整
+            vol = (step === 0) ? 1.0 : 0.6;
         }
 
         document.getElementById('tDisp').innerText = t || "-";
