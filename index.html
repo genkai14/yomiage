@@ -73,17 +73,16 @@
 <script>
     let data = [], idx = 0, playing = false, paused = false, loop = 1, step = 0, tid = null, vJa = null, vEn = null;
 
-    // 高品質な女性音声優先の取得関数（iOS/PC両対応）
     function initV() {
         if (!('speechSynthesis' in window)) return;
         const vs = window.speechSynthesis.getVoices();
         
-        // 日本語（Siri Kyoko, Google, Premium, Naturalなどの流暢な女性声を優先）
-        vJa = vs.find(v => v.lang.startsWith('ja') && (v.name.includes('Siri') || v.name.includes('Kyoko') || v.name.includes('Otoya') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium')))
+        // 日本語（自然で流暢な女性声を優先）
+        vJa = vs.find(v => v.lang.startsWith('ja') && (v.name.includes('Kyoko') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium')))
            || vs.find(v => v.lang.startsWith('ja'));
         
-        // 英語（Siri Samantha/Karen, Google, Ziraなどの自然な女性声を優先）
-        vEn = vs.find(v => v.lang.startsWith('en') && (v.name.includes('Siri') || v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Victoria') || v.name.includes('Google') || v.name.includes('Zira') || v.name.includes('Natural') || v.name.includes('Premium')))
+        // 英語（自然で流暢な女性声を優先）
+        vEn = vs.find(v => v.lang.startsWith('en') && (v.name.includes('Samantha') || v.name.includes('Karen') || v.name.includes('Siri') || v.name.includes('Google') || v.name.includes('Zira') || v.name.includes('Natural') || v.name.includes('Premium')))
            || vs.find(v => v.lang.startsWith('en'));
     }
 
@@ -143,16 +142,6 @@
     }
 
     function play() {
-        // 声情報を再取得
-        initV();
-
-        // iOSの自動再生ロックを解除するため、ダミー音声を再生
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const dummy = new SpeechSynthesisUtterance('');
-            window.speechSynthesis.speak(dummy);
-        }
-
         if (paused) {
             paused = false; playing = true; btn(); txt(); return;
         }
@@ -186,7 +175,7 @@
             t = (step === 0) ? item.ja : item.en;
             l = (step === 0) ? 'ja-JP' : 'en-US';
             v = (step === 0) ? vJa : vEn;
-            vol = (step === 0) ? 1.0 : 0.85; // 日本語1.0、英語0.85で音量バランスを最適化
+            vol = (step === 0) ? 1.0 : 0.85; // 日本語1.0、英語0.85
         } else {
             t = (step === 0) ? item.en : item.ja;
             l = (step === 0) ? 'en-US' : 'ja-JP';
@@ -197,11 +186,14 @@
         document.getElementById('tDisp').innerText = t || "-";
         if (!t) { nextStep(); txt(); return; }
 
+        // 再生前に既存の音声を一度クリア（iOSの詰まり防止）
+        window.speechSynthesis.cancel();
+
         const u = new SpeechSynthesisUtterance(t);
         u.lang = l;
         if (v) u.voice = v;
         u.volume = vol;
-        u.rate = (l === 'ja-JP') ? 0.95 : 0.9; // 自然で流暢な速度調整
+        u.rate = (l === 'ja-JP') ? 0.95 : 0.9;
 
         u.onend = function() {
             if (!playing || paused) return;
